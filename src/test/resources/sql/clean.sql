@@ -1,0 +1,1 @@
+DELETE FROM mobile_booking_journal;
