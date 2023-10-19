@@ -6,5 +6,5 @@ import com.testing.dto.BookingRequestTO;
 public interface MobileBookingService {
 
     ResponseTO<String> bookMobile(BookingRequestTO requestDTO);
-    ResponseTO<String> returnMobile(Long testingMobileId);
+    ResponseTO<String> releaseMobile(Long testingMobileId);
 }

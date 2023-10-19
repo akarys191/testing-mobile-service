@@ -23,6 +23,6 @@ public class TestingMobileController {
 
     @PostMapping("/{testingMobileId}/release")
     public ResponseTO<String> releaseMobile(@PathVariable final Long testingMobileId) {
-        return testMobileService.returnMobile(testingMobileId);
+        return testMobileService.releaseMobile(testingMobileId);
     }
 }

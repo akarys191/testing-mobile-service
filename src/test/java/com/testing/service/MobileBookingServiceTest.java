@@ -101,7 +101,7 @@ class MobileBookingServiceTest {
         Mockito.when(mobileBookingJournalService.getLatestBookingForMobile(testingMobile.getId()))
                 .thenReturn(Optional.of(mobileBookingJournal));
         //then
-        final ResponseTO<String> responseTO = mobileBookingService.returnMobile(testingMobile.getId());
+        final ResponseTO<String> responseTO = mobileBookingService.releaseMobile(testingMobile.getId());
         assertThat(responseTO.getData()).isEqualTo("The mobile 1 has been released successfully from Tester 1 tester");
     }
 

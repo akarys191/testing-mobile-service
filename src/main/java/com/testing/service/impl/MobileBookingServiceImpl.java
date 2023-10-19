@@ -38,21 +38,24 @@ public class MobileBookingServiceImpl implements MobileBookingService {
                     mobileBookingJournalService.getLatestBookingForMobile(testingMobile.getId());
 
             if(latestBookingForMobile.isPresent()){
-                throw new AlreadyBookedException(String.format("Testing mobile has been booked by %s already!",
-                                                               latestBookingForMobile.get().getTester().getFullName()));
+                throw new AlreadyBookedException(String.format("Testing mobile has been booked by %s already at %s!",
+                                                               latestBookingForMobile.get().getTester().getFullName(),
+                                                               latestBookingForMobile.get().getBookingDateTime()));
             }
 
             Tester tester = testerService.getTesterById(requestTO.getTesterId());
-            this.mobileBookingJournalService.saveMobileBooking(testingMobile, tester);
+            MobileBookingJournal mobileBookingJournal =
+                    this.mobileBookingJournalService.saveMobileBooking(testingMobile, tester);
             String formattedBookingMessage =
-                    String.format("Mobile %s has been booked by %s successfully", testingMobile.getName(), tester.getUserName());
+                    String.format("Mobile %s has been booked by %s successfully at %s", testingMobile.getName(), tester.getUserName(), mobileBookingJournal.getBookingDateTime());
             log.debug(formattedBookingMessage);
             return ResponseTO.success(formattedBookingMessage);
         } catch (OptimisticLockException | PessimisticLockException ex) {
             MobileBookingJournal latestBookingForMobile = getLatestBookingForMobile(requestTO.getMobileId());
-            throw new AlreadyBookedException(String.format("Testing mobile %s has been booked by %s already!",
+            throw new AlreadyBookedException(String.format("Testing mobile %s has been booked by %s already at %s!",
                                                            requestTO.getMobileId(),
-                                                           latestBookingForMobile.getTester().getFullName()));
+                                                           latestBookingForMobile.getTester().getFullName(),
+                                                           latestBookingForMobile.getBookingDateTime()));
         }
     }
 
@@ -64,10 +67,11 @@ public class MobileBookingServiceImpl implements MobileBookingService {
 
     @Override
     @Transactional
-    public ResponseTO<String> returnMobile(Long testingMobileId) {
+    public ResponseTO<String> releaseMobile(Long testingMobileId) {
         MobileBookingJournal latestBookingForMobile = getLatestBookingForMobile(testingMobileId);
         this.mobileBookingJournalService.releaseMobile(latestBookingForMobile);
-        return ResponseTO.success(String.format("The mobile %s has been released successfully from %s tester", testingMobileId, latestBookingForMobile.getTester().getFullName()));
+        return ResponseTO.success(String.format("The mobile %s has been released successfully from %s at %s", testingMobileId,
+                                                latestBookingForMobile.getTester().getFullName(), latestBookingForMobile.getBookingDateTime()));
     }
 
     private TestingMobile getTestingMobile(Long testingMobileId) {
